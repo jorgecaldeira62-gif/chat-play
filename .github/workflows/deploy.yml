@@ -1,7 +1,7 @@
-name: Deploy to GitHub Pages
+name: Deploy GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [main, master]
   workflow_dispatch:
 permissions:
   contents: read
@@ -10,19 +10,17 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install & Build
-        run: |
-          npm install 2>/dev/null || true
-          npm run build 2>/dev/null || true
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
-      - name: Deploy to GitHub Pages
+          path: "."
+      - name: Deploy
+        id: deployment
         uses: actions/deploy-pages@v4
